@@ -1,0 +1,7 @@
+numpy==1.19.5
+pandas
+streamlit
+streamlit-aggrid==0.2.2-2
+scikit-learn
+scikit-surprise==1.1.1
+tensorflow==2.7.0
