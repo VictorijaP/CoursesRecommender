@@ -21,6 +21,7 @@ st.set_page_config(
 def load_ratings():
     return backend.load_ratings()
 
+
 @st.cache
 def load_course_sims():
     return backend.load_course_sims()
@@ -35,9 +36,11 @@ def load_courses():
 def load_bow():
     return backend.load_bow()
 
+
 @st.cache
 def load_course_genres():
     return backend.load_course_genres()
+
 
 @st.cache
 def load_user_profiles():
@@ -89,6 +92,7 @@ def train(model_name, enrolled_course_ids, params):
         backend.train(model_name, selected_courses_df['COURSE_ID'].values, params)
         st.success('Done!')
 
+
 def predict(model_name, new_user_id, params):
     res = None
     # Start making predictions based on model name, test user ids, and parameters
@@ -105,14 +109,14 @@ st.sidebar.title('Personalized Learning Recommender')
 # Initialize the app
 selected_courses_df = init__recommender_app()
 
-# Model selection selectbox
+# Model selection select-box
 st.sidebar.subheader('1. Select recommendation models')
 model_selection = st.sidebar.selectbox(
     "Select model:",
     backend.models
 )
 
-# Hyper-parameters for each model
+# Hyperparameters for each model
 params = {}
 st.sidebar.subheader('2. Tune Hyper-parameters: ')
 # Course similarity model
@@ -140,8 +144,7 @@ elif model_selection == backend.models[1]:
 # Clustering model
 elif model_selection == backend.models[2]:
     km_sim_threshold = st.sidebar.slider('Clustering Similarity Threshold %',
-                                      min_value=0, max_value=100,
-                                      value=50, step=10)
+                                         min_value=0, max_value=100, value=50, step=10)
     cluster_no = st.sidebar.slider('Number of Clusters', min_value=5, max_value=50, value=20, step=1)
     top_courses = st.sidebar.slider('Top courses', min_value=1, max_value=100, value=10, step=1)
     params['km_sim_threshold'] = km_sim_threshold
@@ -194,8 +197,10 @@ elif model_selection == backend.models[6]:
     params['nn_embedding_size'] = 32
     params['nn_sim_threshold'] = nn_sim_threshold
     with st.sidebar.expander('Advanced options.', False):
-        st.caption('Changing these options will cause the app to train a new model, instead of using the pretrained one.')
-        st.info('Depending on your settings, training can take a significant amount of time (minutes to many hours).')
+        st.caption('Changing these options will cause the app to train a new model,'
+                   'instead of using the pretrained one.')
+        st.info('Depending on your settings, training can take a significant amount of time'
+                '(minutes to many hours).')
         st.caption('Training dataset generation')
         nn_train_size = st.slider('Training data size', min_value=0.5, max_value=0.9, value=0.8, step=0.05)
         nn_batch_size = st.slider('Batch size', min_value=16, max_value=512, value=64, step=16)
@@ -208,13 +213,13 @@ elif model_selection == backend.models[6]:
     params['nn_embedding_size'] = nn_embedding_size
     params['top_courses'] = top_courses
     params['nn_sim_threshold'] = nn_sim_threshold
-# Classification with embeddinds model
+# Classification model with embeddings
 elif model_selection == backend.models[7]:
     top_courses = st.sidebar.slider('Top courses', min_value=1, max_value=20, value=10, step=1)
     emb_sim_threshold = st.sidebar.slider('Classification Similarity Threshold %',
                                          min_value=0, max_value=100,
                                          value=50, step=10)
-    emb_n_neighbors = st.sidebar.slider('Niarest Neighbors', min_value=1, max_value=50,
+    emb_n_neighbors = st.sidebar.slider('Nearest Neighbors', min_value=1, max_value=50,
                                          value=20, step=1)
     params['top_courses'] = top_courses
     params['emb_sim_threshold'] = emb_sim_threshold
@@ -240,7 +245,7 @@ pred_button = st.sidebar.button("Recommend New Courses")
 if pred_button and selected_courses_df.shape[0] > 0:
     # Create a new id for current user session
     new_user_id = backend.add_new_ratings(selected_courses_df['COURSE_ID'].values)
-    #user_ids = [new_id]
+    # user_ids = [new_id]
     res_df = predict(model_selection, new_user_id, params)
     res_df = res_df[['COURSE_ID', 'SCORE']]
     course_df = load_courses()
